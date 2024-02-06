@@ -32,14 +32,19 @@ type DbConf struct {
 	DbName string
 }
 
-func initDatabase(ctx context.Context, isTestEnv bool) (*Db, error) {
+func initDatabase(ctx context.Context) (*Db, error) {
 	uri = os.Getenv("MONGO_URI")
 	if uri == "" {
 		return nil, errors.New("MONGO_URI environment variable must be set")
 	}
+	isTest := false
+	env := os.Getenv("GO_ENV")
+	if env == "test" {
+		isTest = true
+	}
 
 	dbName = "lily-med"
-	if isTestEnv {
+	if isTest {
 		dbName = "lily-med-test"
 	}
 
@@ -73,10 +78,10 @@ func ConnectDatabase(c *mongo.Client, n string) *mongo.Database {
 	return c.Database(n)
 }
 
-func GetInstance(ctx context.Context, isTestEnv bool) (*Db, error) {
+func GetInstance(ctx context.Context) (*Db, error) {
 	var err error
 	once.Do(func() {
-		instance, err = initDatabase(ctx, isTestEnv)
+		instance, err = initDatabase(ctx)
 	})
 	return instance, err
 }
