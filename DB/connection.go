@@ -43,7 +43,10 @@ func initDatabase(ctx context.Context, isTestEnv bool) (*Db, error) {
 		dbName = "lily-med-test"
 	}
 
-	client = ConnectClient(ctx, uri)
+	client, err := ConnectClient(ctx, uri)
+	if err != nil {
+		return nil, err
+	}
 
 	db = ConnectDatabase(client, dbName)
 
@@ -57,12 +60,13 @@ func initDatabase(ctx context.Context, isTestEnv bool) (*Db, error) {
 	}, nil
 }
 
-func ConnectClient(ctx context.Context, uri string) *mongo.Client {
+func ConnectClient(ctx context.Context, uri string) (*mongo.Client, error) {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
-		panic(err)
+		log.Printf("Error connecting to client: %v", err)
+		return nil, err
 	}
-	return client
+	return client, nil
 }
 
 func ConnectDatabase(c *mongo.Client, n string) *mongo.Database {
@@ -90,7 +94,10 @@ func (d *Db) PingDatabase() {
 
 	if err := d.Client.Ping(ctx, nil); err != nil {
 		log.Printf("Error pinging database: %v\n", err)
-		client = ConnectClient(ctx, d.Config.Uri)
+		client, err = ConnectClient(ctx, d.Config.Uri)
+		if err != nil {
+			log.Printf("Error reconnecting to mongo client after failed database ping: %v\n", err)
+		}
 
 		// TODO: What should happen if the client doesnt connect again? Might be worth pinging here and if it fails send an email out to admin
 	} else {
