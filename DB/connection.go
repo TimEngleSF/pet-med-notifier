@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -80,5 +81,19 @@ func (d Db) CloseConnection() {
 	err := d.Client.Disconnect(context.TODO())
 	if err != nil {
 		log.Printf("Error closing mongo client: %v", err)
+	}
+}
+
+func (d *Db) PingDatabase() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := d.Client.Ping(ctx, nil); err != nil {
+		log.Printf("Error pinging database: %v\n", err)
+		client = ConnectClient(ctx, d.Config.Uri)
+
+		// TODO: What should happen if the client doesnt connect again? Might be worth pinging here and if it fails send an email out to admin
+	} else {
+		log.Println("Successfully pinged database.")
 	}
 }
