@@ -79,9 +79,13 @@ func TestInitDatabase(t *testing.T) {
 			if tc.setEnv {
 				os.Setenv("MONGO_URI", tc.envValue)
 				defer os.Unsetenv("MONGO_URI")
+				if !tc.isTestEnv {
+					os.Setenv("GO_ENV", "not_test")
+					defer os.Setenv("GO_ENV", "test")
+				}
 			}
 
-			d, err := initDatabase(context.Background(), tc.isTestEnv)
+			d, err := initDatabase(context.Background())
 			if tc.expectError {
 				if err == nil {
 					t.Errorf("Expected an error but didn't receive one")

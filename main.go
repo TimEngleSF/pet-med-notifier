@@ -5,7 +5,6 @@ import (
 	db "lily-med/DB"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -20,13 +19,7 @@ func main() {
 		log.Println("no .env file found")
 	}
 
-	env := os.Getenv("GO_ENV")
-	if env == "test" {
-		isTest = true
-	}
-	// TODO: connect to db and handle errors, then begin writing tests
-
-	dbInstance, err := db.GetInstance(context.Background(), isTest)
+	dbInstance, err := db.GetInstance(context.Background())
 	if err != nil {
 		log.Fatalf("Error initializing database connection: %v\n", err)
 	}
