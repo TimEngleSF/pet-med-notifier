@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	db "lily-med/DB"
+	"lily-med/controllers"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 var isTest bool = false
@@ -31,14 +30,23 @@ func main() {
 		}
 	}()
 
-	e := echo.New()
+	mux := http.NewServeMux()
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello World!\n")
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello World!\n"))
 	})
 
-	e.Logger.Fatal(e.Start(":42069"))
+	mux.HandleFunc("/medicine", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			controllers.CreateMedicineHandler(w, r)
+		} else {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	server := &http.Server{Addr: ":42069", Handler: mux}
+	log.Println("Starting server on 42069")
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("Error starting server: %v\n", err)
+	}
 }
