@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+
 	"os"
 	"testing"
 )
@@ -9,18 +10,24 @@ import (
 var testURI = "mongodb://localhost:27017"
 
 func TestConnectClient(t *testing.T) {
-	client, err := ConnectClient(context.TODO(), testURI)
+	os.Setenv("MONGO_URI", "mongodb://localhost:27017")
+	os.Setenv("GO_ENV", "test")
+	testCtx := context.Background()
+
+	client, err := ConnectClient(testCtx, testURI)
 	if err != nil {
 		t.Errorf("Failed to connect to client: %v\n", err)
 	}
-	defer client.Disconnect(context.TODO())
+	defer client.Disconnect(testCtx)
 
-	if err := client.Ping(context.TODO(), nil); err != nil {
+	if err := client.Ping(testCtx, nil); err != nil {
 		t.Fatalf("Client failed to connect: %v", err)
 	}
 }
 
 func TestConnectDatabase(t *testing.T) {
+	os.Setenv("MONGO_URI", "mongodb://localhost:27017")
+	os.Setenv("GO_ENV", "test")
 	expectedName := "lily-med-test"
 	client, err := ConnectClient(context.TODO(), testURI)
 	if err != nil {
@@ -36,6 +43,8 @@ func TestConnectDatabase(t *testing.T) {
 }
 
 func TestInitDatabase(t *testing.T) {
+	os.Setenv("MONGO_URI", "mongodb://localhost:27017")
+	os.Setenv("GO_ENV", "test")
 	testCases := []struct {
 		name           string
 		setEnv         bool

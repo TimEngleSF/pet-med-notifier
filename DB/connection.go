@@ -22,14 +22,19 @@ var (
 )
 
 type Db struct {
-	Db     *mongo.Database
-	Client *mongo.Client
-	Config DbConf
+	Db          *mongo.Database
+	Client      *mongo.Client
+	Config      DbConf
+	Collections Collections
 }
 
 type DbConf struct {
 	Uri    string
 	DbName string
+}
+
+type Collections struct {
+	Meds string
 }
 
 func initDatabase(ctx context.Context) (*Db, error) {
@@ -62,11 +67,13 @@ func initDatabase(ctx context.Context) (*Db, error) {
 			Uri:    uri,
 			DbName: dbName,
 		},
+		Collections: Collections{Meds: "medicines"},
 	}, nil
 }
 
 func ConnectClient(ctx context.Context, uri string) (*mongo.Client, error) {
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	var err error
+	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Printf("Error connecting to client: %v", err)
 		return nil, err
