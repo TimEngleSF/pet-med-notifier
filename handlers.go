@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 
+	"github.com/TimEngleSF/pet-med-notifier/repository"
 	"github.com/TimEngleSF/pet-med-notifier/templates"
 	"github.com/TimEngleSF/pet-med-notifier/templates/pages"
 
@@ -16,7 +18,11 @@ func indexViewHandler(c echo.Context) error {
 
 	// Set the response content type to HTML.
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-
+	results, err := repository.GetDailyMedicines(c.Request().Context(), *MedDb)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(results)
 	// Define template meta tags.
 	metaTags := pages.MetaTags(
 		"gowebly, htmx example page, go with htmx",               // define meta keywords
