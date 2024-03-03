@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"sort"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,7 +13,7 @@ import (
 
 const TimeZone = "America/Los_Angeles"
 
-type TimeMed struct {
+type TimeKey struct {
 	Hour int `bson:"hour"`
 	Min  int `bson:"min"`
 }
@@ -19,11 +21,15 @@ type TimeMed struct {
 type Medicine struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	Name       string             `bson:"name"`
-	TimeToTake *TimeMed           `bson:"time-to-take"`
+	TimeToTake *TimeKey           `bson:"time-to-take"`
 	Taken      bool               `bson:"taken"`
-	TimeTaken  *TimeMed           `bson:"time-taken"`
+	TimeTaken  *TimeKey           `bson:"time-taken"`
 	Date       *time.Time         `bson:"date"`
 }
+
+type Medicines []Medicine
+
+type GroupedMedicines map[TimeKey][]Medicine
 
 // func (m *Medicine) CreateMedicine(c echo.Context, db mongo.Database) error {}
 
@@ -79,3 +85,42 @@ func AddDailyMedicine(c context.Context, d *mongo.Database, m Medicine) (*mongo.
 	}
 	return result, nil
 }
+
+func (t TimeKey) String() string {
+	return fmt.Sprintf("%02d:%02d", t.Hour, t.Min)
+}
+
+func (gm GroupedMedicines) SortKeys() []TimeKey {
+	var keys []TimeKey
+	for key := range gm {
+		keys = append(keys, key)
+	}
+
+	sort.Slice(keys, func(i, j int) bool {
+		if keys[i].Hour < keys[j].Hour {
+			return true
+		}
+		if keys[i].Hour > keys[j].Hour {
+			return false
+		}
+		return keys[i].Min < keys[j].Min
+	})
+
+	return keys
+}
+
+func (meds Medicines) GroupByTime() GroupedMedicines {
+	medicineGroups := GroupedMedicines{}
+	for _, med := range meds {
+		if med.TimeToTake != nil {
+			key := *med.TimeToTake
+			medicineGroups[key] = append(medicineGroups[key], med)
+		}
+	}
+
+	return medicineGroups
+}
+
+// USE THE PREVIOUS TWO FUNCTIONS TO RUN A LOOP BY ITERATING OVER THE SORTED keys
+// THEN WE CAN FIND A GROUPED MEDICINE BY MATCHING ITS TIMEKEY [TimeKey][]Medicines with sorted TimeKey
+// WE CAN WRAP THESE IN A DIV
