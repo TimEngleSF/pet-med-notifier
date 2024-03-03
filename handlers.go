@@ -15,11 +15,11 @@ import (
 
 // indexViewHandler handles a view for the index page.
 func indexViewHandler(c echo.Context) error {
-	fmt.Println(MedDb.Name())
 	results, err := repository.GetDailyMedicines(c.Request().Context(), *MedDb)
 	if err != nil {
 		fmt.Printf("Error getting Daily Medicines: %v\n", err)
 	}
+
 	fmt.Println("hello", results)
 	// Set the response content type to HTML.
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
@@ -34,7 +34,7 @@ func indexViewHandler(c echo.Context) error {
 	bodyContent := pages.BodyContent(
 		"Welcome to example!",                // define h1 text
 		"You're here because it worked out.", // define p text
-		DummyMeds,
+		DummyMeds.GroupByTime(),
 	)
 
 	// Define template layout for index page.

@@ -16,36 +16,41 @@ import (
 var (
 	client    *mongo.Client
 	MedDb     *mongo.Database
-	DummyMeds = []repository.Medicine{
+	DummyMeds = repository.Medicines{
 		{
 			Id:         primitive.NewObjectID(),
 			Name:       "Test1",
-			TimeToTake: &repository.TimeMed{Hour: 00, Min: 30},
+			TimeToTake: &repository.TimeKey{Hour: 00, Min: 00},
 			Taken:      false,
+			Overdue:    true,
 		},
 		{
 			Id:         primitive.NewObjectID(),
 			Name:       "Test2",
-			TimeToTake: &repository.TimeMed{Hour: 16, Min: 00},
+			TimeToTake: &repository.TimeKey{Hour: 16, Min: 00},
 			Taken:      false,
+			Overdue:    false,
 		},
 		{
 			Id:         primitive.NewObjectID(),
 			Name:       "Test3",
-			TimeToTake: &repository.TimeMed{Hour: 00, Min: 00},
+			TimeToTake: &repository.TimeKey{Hour: 00, Min: 00},
 			Taken:      true,
+			Overdue:    false,
 		},
 		{
 			Id:         primitive.NewObjectID(),
 			Name:       "Test2",
-			TimeToTake: &repository.TimeMed{Hour: 16, Min: 00},
+			TimeToTake: &repository.TimeKey{Hour: 16, Min: 00},
 			Taken:      false,
+			Overdue:    false,
 		},
 		{
 			Id:         primitive.NewObjectID(),
 			Name:       "Test3",
-			TimeToTake: &repository.TimeMed{Hour: 00, Min: 00},
+			TimeToTake: &repository.TimeKey{Hour: 00, Min: 00},
 			Taken:      true,
+			Overdue:    false,
 		},
 	}
 )
