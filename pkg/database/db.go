@@ -1,84 +1,118 @@
-package database
+// package database
 
-import (
-	"context"
-	"errors"
-	"log"
-	"os"
-	"time"
+// import (
+// 	"context"
+// 	"errors"
+// 	"log"
+// 	"os"
+// 	"sync"
+// 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-)
+// 	"go.mongodb.org/mongo-driver/mongo"
+// 	"go.mongodb.org/mongo-driver/mongo/options"
+// )
 
-var URI = os.Getenv("LILY_MONGO_URI")
-var (
-	instance *Db
-	db       *mongo.Database
-	client   *mongo.Client
-	dbName   string
-)
+// var (
+// 	instance *Db
+// 	db       *mongo.Database
+// 	client   *mongo.Client
+// 	uri      string
+// 	dbName   string
+// 	once     sync.Once
+// )
 
-type Db struct {
-	Db              *mongo.Database
-	Client          *mongo.Client
-	CollectionNames []string
-}
+// type Db struct {
+// 	Db          *mongo.Database
+// 	Client      *mongo.Client
+// 	Config      DbConf
+// 	Collections Collections
+// }
 
-func InitDatabase(c context.Context) (*Db, error) {
-	if URI == "" {
-		return nil, errors.New("MONGO_URI environment variable must be set")
-	}
-	isTest := false
-	env := os.Getenv("GO_ENV")
-	if env == "test" {
-		isTest = true
-	}
+// type DbConf struct {
+// 	Uri    string
+// 	DbName string
+// }
 
-	dbName = "lily-med"
-	if isTest {
-		dbName = "lily-med-test"
-	}
+// type Collections struct {
+// 	Meds string
+// }
 
-	client := ConnectClient(c)
+// func initDatabase(ctx context.Context) (*Db, error) {
+// 	uri = os.Getenv("MONGO_URI")
+// 	if uri == "" {
+// 		return nil, errors.New("MONGO_URI environment variable must be set")
+// 	}
+// 	isTest := false
+// 	env := os.Getenv("GO_ENV")
+// 	if env == "test" {
+// 		isTest = true
+// 	}
 
-	db = ConnectDatabase(client, dbName)
+// 	dbName = "lily-med"
+// 	if isTest {
+// 		dbName = "lily-med-test"
+// 	}
 
-	return &Db{
-		Client:          client,
-		Db:              db,
-		CollectionNames: []string{"medications", "history"},
-	}, nil
-}
+// 	client, err := ConnectClient(ctx, uri)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-func ConnectClient(c context.Context) *mongo.Client {
-	c, cancel := context.WithCancel(context.Background(), 10*time.Second)
-	defer cancel()
+// 	db = ConnectDatabase(client, dbName)
 
-	client, err := mongo.Client(c, options.Client().ApplyURI(uri))
-	if err != nil {
-		log.Fatalf("Connection to MongoDB Client %v Failed: %v\n", uri, err)
-	}
+// 	return &Db{
+// 		Client: client,
+// 		Db:     db,
+// 		Config: DbConf{
+// 			Uri:    uri,
+// 			DbName: dbName,
+// 		},
+// 		Collections: Collections{Meds: "medicines"},
+// 	}, nil
+// }
 
-	return client
-}
+// func ConnectClient(ctx context.Context, uri string) (*mongo.Client, error) {
+// 	var err error
+// 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
+// 	if err != nil {
+// 		log.Printf("Error connecting to client: %v", err)
+// 		return nil, err
+// 	}
+// 	return client, nil
+// }
 
-func ConnectDatabase(c *mongo.Client, n string) *mongo.Database {
-	return c.Database(n)
-}
+// func ConnectDatabase(c *mongo.Client, n string) *mongo.Database {
+// 	return c.Database(n)
+// }
 
-func GetInstance(c context.Context) (*Db, error) {
-	instance, err := InitDatabase(c)
-	return instance, err
-}
+// func GetInstance(ctx context.Context) (*Db, error) {
+// 	var err error
+// 	once.Do(func() {
+// 		instance, err = initDatabase(ctx)
+// 	})
+// 	return instance, err
+// }
 
-func (d Db) CloseConnection() {
-	err := d.Client.Disconnect(context.TODO())
-	if err != nil {
-		log.Printf("Error closing mongo client: %v\n", err)
-	}
-}
+// func (d Db) CloseConnection() {
+// 	err := d.Client.Disconnect(context.TODO())
+// 	if err != nil {
+// 		log.Printf("Error closing mongo client: %v", err)
+// 	}
+// }
 
-// func GetInstance (c *context.Context) (*Db, error) {
-// 	if
+// func (d *Db) PingDatabase() {
+// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 	defer cancel()
+
+// 	if err := d.Client.Ping(ctx, nil); err != nil {
+// 		log.Printf("Error pinging database: %v\n", err)
+// 		client, err = ConnectClient(ctx, d.Config.Uri)
+// 		if err != nil {
+// 			log.Printf("Error reconnecting to mongo client after failed database ping: %v\n", err)
+// 		}
+
+// 		// TODO: What should happen if the client doesnt connect again? Might be worth pinging here and if it fails send an email out to admin
+// 	} else {
+// 		log.Println("Successfully pinged database.")
+// 	}
 // }

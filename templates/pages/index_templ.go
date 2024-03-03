@@ -11,6 +11,8 @@ import "io"
 import "bytes"
 import "strings"
 
+import "github.com/TimEngleSF/pet-med-notifier/repository"
+
 // MetaTags defines meta tags.
 func MetaTags(keywords, description string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -64,7 +66,7 @@ func styledTextStyles() templ.CSSClass {
 }
 
 // BodyContent defines HTML content.
-func BodyContent(h1, text string) templ.Component {
+func BodyContent(h1, text string, medicines []repository.Medicine) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -77,24 +79,15 @@ func BodyContent(h1, text string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"app\"><div><a href=\"https://gowebly.org\" target=\"_blank\"><img src=\"/static/images/gowebly.svg\" class=\"gowebly logo\" alt=\"Gowebly logo\"></a><h1>Go + Templ + htmx</h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"artboard sm:phone-2 md:phone-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 = []any{styledTextStyles()}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
+		templ_7745c5c3_Err = MedicineSection(medicines).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p class=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.CSSClasses(templ_7745c5c3_Var3).String()))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">You're using <strong>Templ</strong> package to generate HTML content!<br>Edit this styled text in the <code>./templates/pages/index.templ</code> file.</p><div class=\"content\"><button hx-get=\"/api/hello-world\" hx-target=\"#htmx-result\">Hello, World!</button><div id=\"htmx-result\"></div></div><p class=\"read-the-docs\">The Gowebly project is a next-generation CLI tool that makes it easy to create<br>amazing web applications with Go on the backend, using htmx & hyperscript<br>and the most popular CSS frameworks on the frontend.</p><p class=\"read-the-docs\"><a href=\"https://gowebly.org\" target=\"_blank\">Documentation</a> &sdot; <a href=\"https://github.com/gowebly/gowebly\" target=\"_blank\">GitHub</a></p></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

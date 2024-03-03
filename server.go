@@ -7,14 +7,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/TimEngleSF/pet-med-notifier/pkg/database"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	gowebly "github.com/gowebly/helpers"
 )
-
-var DbInstance *database.Db
 
 // runServer runs a new HTTP server with the loaded environment variables.
 func runServer() error {
@@ -22,11 +19,6 @@ func runServer() error {
 	port, err := strconv.Atoi(gowebly.Getenv("BACKEND_PORT", "42069"))
 	if err != nil {
 		return err
-	}
-
-	if !DbInstance {
-
-		DbInstance, err = database.GetInstance()
 	}
 
 	// Create a new Echo server.

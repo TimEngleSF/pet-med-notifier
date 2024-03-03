@@ -1,0 +1,23 @@
+package pages
+
+import "github.com/TimEngleSF/pet-med-notifier/repository"
+
+templ Medicines_Container(medicines []repository.Medicine) {
+	<section>
+		for _, m := range medicines {
+			@Medicine_Card(m)
+		}
+	</section>
+}
+
+templ Medicine_Card(m repository.Medicine) {
+	<div class="card w-96 bg-primary text-primary-content">
+		<div class="card-body">
+			<h2 class="card-title">Check</h2>
+			// <p>{ strconv.Itoa(m.TimeToTake.Hour) }:{ strconv.Itoa(m.TimeToTake.Min) }</p>
+			<div class="card-actions justify-end">
+				<button class="btn">Buy Now</button>
+			</div>
+		</div>
+	</div>
+}

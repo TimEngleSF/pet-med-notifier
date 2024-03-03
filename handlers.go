@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 
+	"github.com/TimEngleSF/pet-med-notifier/repository"
 	"github.com/TimEngleSF/pet-med-notifier/templates"
 	"github.com/TimEngleSF/pet-med-notifier/templates/pages"
 
@@ -13,7 +15,12 @@ import (
 
 // indexViewHandler handles a view for the index page.
 func indexViewHandler(c echo.Context) error {
-
+	fmt.Println(MedDb.Name())
+	results, err := repository.GetDailyMedicines(c.Request().Context(), *MedDb)
+	if err != nil {
+		fmt.Printf("Error getting Daily Medicines: %v\n", err)
+	}
+	fmt.Println("hello", results)
 	// Set the response content type to HTML.
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 
@@ -27,6 +34,7 @@ func indexViewHandler(c echo.Context) error {
 	bodyContent := pages.BodyContent(
 		"Welcome to example!",                // define h1 text
 		"You're here because it worked out.", // define p text
+		DummyMeds,
 	)
 
 	// Define template layout for index page.
@@ -37,7 +45,6 @@ func indexViewHandler(c echo.Context) error {
 	)
 
 	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, indexTemplate)
-
 }
 
 // showContentAPIHandler handles an API endpoint to show content.
