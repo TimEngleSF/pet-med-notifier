@@ -1,33 +1,20 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 
 	gowebly "github.com/gowebly/helpers"
 )
 
-var client *mongo.Client
-var MedDb *mongo.Database
-
 // runServer runs a new HTTP server with the loaded environment variables.
 func runServer() error {
-	URI := os.Getenv("URI")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	client, _ = mongo.Connect(ctx, options.Client().ApplyURI(URI))
-	MedDb = client.Database("lily-med")
-	fmt.Println(MedDb.Name())
 	// Validate environment variables.
 	port, err := strconv.Atoi(gowebly.Getenv("BACKEND_PORT", "42069"))
 	if err != nil {

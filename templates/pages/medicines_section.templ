@@ -1,0 +1,29 @@
+package pages
+
+import "github.com/TimEngleSF/pet-med-notifier/repository"
+
+templ MedicineSection(medicines []repository.Medicine) {
+	<section class="flex flex-col justify-center items-center">
+		for _, m := range medicines {
+			@MedicineCard(m)
+		}
+	</section>
+}
+
+templ MedicineCard(m repository.Medicine) {
+	<div class="card w-80 max-w-96 bg-primary text-primary-content">
+		<div class="card-body">
+			<h2 class="card-title">{ m.Name }</h2>
+			if m.Date != nil {
+				<p>{ m.Date.String() }</p>
+			}
+			<div class="card-actions justify-end">
+				<button class="btn">Take Med</button>
+			</div>
+		</div>
+	</div>
+}
+
+// templ MedicineCardWrapper() {
+
+// }
