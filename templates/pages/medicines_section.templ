@@ -1,17 +1,36 @@
 package pages
 
-import "github.com/TimEngleSF/pet-med-notifier/repository"
+import (
+  "time"
+  //"strconv"
+  "github.com/TimEngleSF/pet-med-notifier/repository"
+  )
 
-templ MedicineSection(medicines []repository.Medicine) {
+// TODO: use
+templ MedicineSection(gm repository.GroupedMedicines, keys []repository.TimeKey) {
 	<section class="flex flex-col justify-center items-center">
-		for _, m := range medicines {
-			@MedicineCard(m)
+		for _, k := range keys {
+			<p>{ k.String()  }</p>
+			<div>
+				for _, m := range gm[k] {
+					@MedicineCard(m)
+				}
+			</div>
 		}
 	</section>
 }
+var cardStyle = "card w-80 max-w-96 text-primary-content"
+var missed = "bg-red-400 " 
+var taken = "bg-green-400 "
+var now = time.Now()
+var hour = now.Hour()
+var min = now.Minute()
 
 templ MedicineCard(m repository.Medicine) {
-	<div class="card w-80 max-w-96 bg-primary text-primary-content">
+  if m.TimeToTake.Hour < hour {
+    <p></p> 
+    }
+	<div class={templ.KV(taken, m.Taken), templ.KV(missed, !m.Taken), cardStyle}>
 		<div class="card-body">
 			<h2 class="card-title">{ m.Name }</h2>
 			if m.Date != nil {
