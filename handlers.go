@@ -63,3 +63,9 @@ func showContentAPIHandler(c echo.Context) error {
 
 	return htmx.NewResponse().Write(c.Response().Writer)
 }
+
+func PutMedicineTakenHandler(c echo.Context) error {
+	fmt.Print(c.Request().URL.Query())
+	medicineSectionTemplate := pages.MedicineSection(DummyMeds.GroupByTime(), DummyMeds.GroupByTime().SortKeys())
+	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, medicineSectionTemplate)
+}
