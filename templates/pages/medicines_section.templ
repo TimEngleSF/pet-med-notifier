@@ -1,10 +1,10 @@
 package pages
 
 import (
-  "time"
-  //"strconv"
-  "github.com/TimEngleSF/pet-med-notifier/repository"
-  )
+	"time"
+	//"strconv"
+	"github.com/TimEngleSF/pet-med-notifier/repository"
+)
 
 // TODO: use
 templ MedicineSection(gm repository.GroupedMedicines, keys []repository.TimeKey) {
@@ -19,30 +19,32 @@ templ MedicineSection(gm repository.GroupedMedicines, keys []repository.TimeKey)
 		}
 	</section>
 }
+
 var cardStyle = "card w-80 max-w-96 text-primary-content"
-var missed = "bg-red-400 " 
-var taken = "bg-green-400 "
+var missed = "bg-red-400 "
+var taken = "bg-emerald-500 "
+var complete = "bg green opacity-80 "
 var now = time.Now()
 var hour = now.Hour()
 var min = now.Minute()
 
 templ MedicineCard(m repository.Medicine) {
-  if m.TimeToTake.Hour < hour {
-    <p></p> 
-    }
-	<div class={templ.KV(taken, m.Taken), templ.KV(missed, !m.Taken), cardStyle}>
+	if m.TimeToTake.Hour < hour {
+		<p></p>
+	}
+	<div class={ templ.KV(taken, m.Taken), templ.KV(missed, !m.Taken), templ.KV(complete, m.Taken && m.Due), cardStyle }>
 		<div class="card-body">
-			<h2 class="card-title">{ m.Name }</h2>
+			<h2 class={ "card-title ", templ.KV("text-white line-through", m.Taken) }>{ m.Name }</h2>
 			if m.Date != nil {
 				<p>{ m.Date.String() }</p>
 			}
-			<div class="card-actions justify-end">
-				<button class="btn">Take Med</button>
+			<div class="card-actions justify-end ">
+				if m.Due && m.Taken {
+					✅
+				} else {
+					<button class="btn" hx-trigger="click" hx-put={ "/medicine-taken?id=" + m.Id.Hex() + "&taken=true" } hx-target="main" hx-swap="innerHTML">Take Med</button>
+				}
 			</div>
 		</div>
 	</div>
 }
-
-// templ MedicineCardWrapper() {
-
-// }

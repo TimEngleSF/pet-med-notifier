@@ -36,6 +36,8 @@ func runServer() error {
 	// Handle API endpoints.
 	echo.GET("/api/hello-world", showContentAPIHandler)
 
+	// TODO: Handle PUT /medicine-taken
+	echo.PUT("/medicine-taken", PutMedicineTakenHandler)
 	// Create a new server instance with options from environment variables.
 	// For more information, see https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/
 	server := http.Server{

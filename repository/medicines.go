@@ -25,7 +25,7 @@ type Medicine struct {
 	Taken      bool               `bson:"taken"`
 	TimeTaken  *TimeKey           `bson:"time-taken"`
 	Date       *time.Time         `bson:"date"`
-	Overdue    bool               `bson:"overdue"`
+	Due        bool               `bson:"overdue"`
 }
 
 type Medicines []Medicine
