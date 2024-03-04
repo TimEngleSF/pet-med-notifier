@@ -15,11 +15,12 @@ css styledTextStyles() {
 }
 
 // BodyContent defines HTML content.
-templ BodyContent(h1, text string, medicines []repository.Medicine) {
+templ BodyContent(h1, text string, gm repository.GroupedMedicines) {
 	// <div id="app">
-	<div class="artboard sm:phone-2 md:phone-3">
-		@MedicineSection(medicines)
-	</div>
+	<h1 class="py-6 text-2xl font-bold tracking-wider text-center">Lil's Meds</h1>
+	<main class="artboard sm:phone-2 md:phone-3">
+		@MedicineSection(gm, gm.SortKeys())
+	</main>
 	// </div>
 }
 

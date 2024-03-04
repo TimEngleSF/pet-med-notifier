@@ -66,7 +66,7 @@ func styledTextStyles() templ.CSSClass {
 }
 
 // BodyContent defines HTML content.
-func BodyContent(h1, text string, medicines []repository.Medicine) templ.Component {
+func BodyContent(h1, text string, gm repository.GroupedMedicines) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -79,15 +79,15 @@ func BodyContent(h1, text string, medicines []repository.Medicine) templ.Compone
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"artboard sm:phone-2 md:phone-3\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"py-6 text-2xl font-bold tracking-wider text-center\">Lil's Meds</h1><main class=\"artboard sm:phone-2 md:phone-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = MedicineSection(medicines).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = MedicineSection(gm, gm.SortKeys()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
