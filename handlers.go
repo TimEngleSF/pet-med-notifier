@@ -2,12 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/TimEngleSF/pet-med-notifier/repository"
 	"github.com/TimEngleSF/pet-med-notifier/templates"
 	"github.com/TimEngleSF/pet-med-notifier/templates/pages"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/angelofallars/htmx-go"
 	"github.com/labstack/echo/v4"
@@ -34,7 +38,8 @@ func indexViewHandler(c echo.Context) error {
 	bodyContent := pages.BodyContent(
 		"Welcome to example!",                // define h1 text
 		"You're here because it worked out.", // define p text
-		DummyMeds.GroupByTime(),
+		results.GroupByTime(),
+		time.Now(),
 	)
 
 	// Define template layout for index page.
@@ -65,7 +70,31 @@ func showContentAPIHandler(c echo.Context) error {
 }
 
 func PutMedicineTakenHandler(c echo.Context) error {
-	fmt.Print(c.Request().URL.Query())
-	medicineSectionTemplate := pages.MedicineSection(DummyMeds.GroupByTime(), DummyMeds.GroupByTime().SortKeys())
+	coll := MedDb.Collection("medicines")
+	idStr := c.Request().URL.Query().Get("id")
+
+	taken := c.Request().URL.Query().Get("taken")
+
+	objId, err := primitive.ObjectIDFromHex(idStr)
+	if err != nil {
+		// TODO: handle this error by displaying a message and sendin
+		log.Println("Error converting id query into ObjectID", err)
+	}
+	updateValue := taken == "true"
+
+	update := bson.D{{"$set", bson.D{{"taken", updateValue}}}}
+	_, err = coll.UpdateByID(c.Request().Context(), objId, update)
+	if err != nil {
+		// TODO: handle this error by displaying a message and sendin
+		log.Println("Error Updating Medicine", err)
+	}
+
+	updatedMedicines, err := repository.GetDailyMedicines(c.Request().Context(), *MedDb)
+	if err != nil {
+		// TODO: handle this error by displaying a message and sendin
+		log.Println("Error Getting Medicines", err)
+	}
+	groupedMeds := updatedMedicines.GroupByTime()
+	medicineSectionTemplate := pages.MedicineSection(groupedMeds, groupedMeds.SortKeys())
 	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, medicineSectionTemplate)
 }
