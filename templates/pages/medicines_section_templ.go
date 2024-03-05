@@ -11,9 +11,9 @@ import "io"
 import "bytes"
 
 import (
-	"time"
-	//"strconv"
 	"github.com/TimEngleSF/pet-med-notifier/repository"
+	"strconv"
+	"time"
 )
 
 // TODO: use
@@ -181,7 +181,7 @@ func MedicineCard(m repository.Medicine) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("/medicine-taken?id=" + m.Id.Hex() + "&taken=true"))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("/medicine-taken?id=" + m.Id.Hex() + "&taken=" + strconv.FormatBool(!m.Taken)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

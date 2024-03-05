@@ -2,7 +2,7 @@ package pages
 
 import (
 	"time"
-	//"strconv"
+	"strconv"
 	"github.com/TimEngleSF/pet-med-notifier/repository"
 )
 
@@ -42,7 +42,7 @@ templ MedicineCard(m repository.Medicine) {
 				if m.Due && m.Taken {
 					✅
 				} else {
-					<button class="btn" hx-trigger="click" hx-put={ "/medicine-taken?id=" + m.Id.Hex() + "&taken=true" } hx-target="main" hx-swap="innerHTML">Take Med</button>
+					<button class="btn" hx-trigger="click" hx-put={ "/medicine-taken?id=" + m.Id.Hex() + "&taken=" + strconv.FormatBool(!m.Taken) } hx-target="main" hx-swap="innerHTML">Take Med</button>
 				}
 			</div>
 		</div>
