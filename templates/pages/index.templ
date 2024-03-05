@@ -1,6 +1,10 @@
 package pages
 
-import "github.com/TimEngleSF/pet-med-notifier/repository"
+
+import (
+  "time"
+  "github.com/TimEngleSF/pet-med-notifier/repository"
+)
 
 // MetaTags defines meta tags.
 templ MetaTags(keywords, description string) {
@@ -15,9 +19,10 @@ css styledTextStyles() {
 }
 
 // BodyContent defines HTML content.
-templ BodyContent(h1, text string, gm repository.GroupedMedicines) {
+templ BodyContent(h1, text string, gm repository.GroupedMedicines, date time.Time) {
 	// <div id="app">
 	<h1 class="py-6 text-2xl font-bold tracking-wider text-center">Lil's Meds</h1>
+  <h2>{ date.Format("01-02-2006")}</h2>
 	<main class="artboard sm:phone-2 md:phone-3">
 		@MedicineSection(gm, gm.SortKeys())
 	</main>

@@ -11,7 +11,10 @@ import "io"
 import "bytes"
 import "strings"
 
-import "github.com/TimEngleSF/pet-med-notifier/repository"
+import (
+	"github.com/TimEngleSF/pet-med-notifier/repository"
+	"time"
+)
 
 // MetaTags defines meta tags.
 func MetaTags(keywords, description string) templ.Component {
@@ -66,7 +69,7 @@ func styledTextStyles() templ.CSSClass {
 }
 
 // BodyContent defines HTML content.
-func BodyContent(h1, text string, gm repository.GroupedMedicines) templ.Component {
+func BodyContent(h1, text string, gm repository.GroupedMedicines, date time.Time) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -79,7 +82,20 @@ func BodyContent(h1, text string, gm repository.GroupedMedicines) templ.Componen
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"py-6 text-2xl font-bold tracking-wider text-center\">Lil's Meds</h1><main class=\"artboard sm:phone-2 md:phone-3\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"py-6 text-2xl font-bold tracking-wider text-center\">Lil's Meds</h1><h2>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("01-02-2006"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/index.templ`, Line: 24, Col: 33}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2><main class=\"artboard sm:phone-2 md:phone-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
