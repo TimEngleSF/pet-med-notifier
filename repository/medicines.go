@@ -34,7 +34,7 @@ type GroupedMedicines map[TimeKey][]Medicine
 
 // func (m *Medicine) CreateMedicine(c echo.Context, db mongo.Database) error {}
 
-func GetDailyMedicines(c context.Context, d mongo.Database) ([]Medicine, error) {
+func GetDailyMedicines(c context.Context, d mongo.Database) (Medicines, error) {
 	collection := d.Collection("medicines")
 
 	loc, err := time.LoadLocation(TimeZone)
