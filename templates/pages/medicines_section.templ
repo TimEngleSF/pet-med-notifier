@@ -13,7 +13,11 @@ templ MedicineSection(gm repository.GroupedMedicines, keys []repository.TimeKey)
 			<p>{ k.String()  }</p>
 			<div>
 				for _, m := range gm[k] {
-					@MedicineCard(m)
+					if m.Taken {
+						@MedicineTakenCard(m)
+					} else {
+						@MedicineCard(m)
+					}
 				}
 			</div>
 		}
@@ -29,9 +33,6 @@ var hour = now.Hour()
 var min = now.Minute()
 
 templ MedicineCard(m repository.Medicine) {
-	if m.TimeToTake.Hour < hour {
-		<p></p>
-	}
 	<div class={ templ.KV(taken, m.Taken), templ.KV(missed, !m.Taken), templ.KV(complete, m.Taken && m.Due), cardStyle }>
 		<div class="card-body">
 			<h2 class={ "card-title ", templ.KV("text-white line-through", m.Taken) }>{ m.Name }</h2>
@@ -46,5 +47,14 @@ templ MedicineCard(m repository.Medicine) {
 				}
 			</div>
 		</div>
+	</div>
+}
+
+var takenCardStyle = " flex py-2 px-4 w-80 max-w-96 justify-between duration-1000 rounded-xl"
+
+templ MedicineTakenCard(m repository.Medicine) {
+	<div class={ templ.KV(taken, m.Taken), templ.KV(missed, !m.Taken), templ.KV(complete, m.Taken && m.Due), takenCardStyle }>
+		<h2 class={ "card-title ", templ.KV("text-white line-through", m.Taken) }>{ m.Name }</h2>
+		<button class="btn opacity-30" hx-trigger="click" hx-put={ "/medicine-taken?id=" + m.Id.Hex() + "&taken=" + strconv.FormatBool(!m.Taken) } hx-target="main" hx-swap="innerHTML">Reset</button>
 	</div>
 }

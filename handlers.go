@@ -23,8 +23,6 @@ func indexViewHandler(c echo.Context) error {
 	if err != nil {
 		fmt.Printf("Error getting Daily Medicines: %v\n", err)
 	}
-
-	fmt.Println("hello", results)
 	// Set the response content type to HTML.
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 

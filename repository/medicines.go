@@ -44,7 +44,7 @@ func GetDailyMedicines(c context.Context, d mongo.Database) (Medicines, error) {
 
 	today := time.Now().In(loc).Truncate(24 * time.Hour)
 	// Filter by Date
-	filter := bson.M{"date": bson.M{"$gt": today}}
+	filter := bson.M{"date": bson.M{"$gte": today}}
 
 	var results []Medicine
 	cursor, err := collection.Find(c, filter)
