@@ -23,7 +23,7 @@ type Medicine struct {
 	Name       string             `bson:"name"`
 	TimeToTake *TimeKey           `bson:"time-to-take"`
 	Taken      bool               `bson:"taken"`
-	TimeTaken  *TimeKey           `bson:"time-taken"`
+	TimeTaken  *time.Time         `bson:"time-taken"`
 	Date       *time.Time         `bson:"date"`
 	Due        bool               `bson:"overdue"`
 }
@@ -31,8 +31,6 @@ type Medicine struct {
 type Medicines []Medicine
 
 type GroupedMedicines map[TimeKey][]Medicine
-
-// func (m *Medicine) CreateMedicine(c echo.Context, db mongo.Database) error {}
 
 func GetDailyMedicines(c context.Context, d mongo.Database) (Medicines, error) {
 	collection := d.Collection("medicines")
@@ -78,7 +76,6 @@ func AddDailyMedicine(c context.Context, d *mongo.Database, m Medicine) (*mongo.
 
 	today := time.Now().In(loc).Truncate(24 * time.Hour)
 	m.Date = &today
-	//	m.Id = bson.TypeObjectID
 
 	result, err := collection.InsertOne(c, m)
 	if err != nil {
@@ -121,7 +118,3 @@ func (meds Medicines) GroupByTime() GroupedMedicines {
 
 	return medicineGroups
 }
-
-// USE THE PREVIOUS TWO FUNCTIONS TO RUN A LOOP BY ITERATING OVER THE SORTED keys
-// THEN WE CAN FIND A GROUPED MEDICINE BY MATCHING ITS TIMEKEY [TimeKey][]Medicines with sorted TimeKey
-// WE CAN WRAP THESE IN A DIV
