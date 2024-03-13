@@ -35,12 +35,7 @@ type GroupedMedicines map[TimeKey][]Medicine
 func GetDailyMedicines(c context.Context, d mongo.Database) (Medicines, error) {
 	collection := d.Collection("medicines")
 
-	loc, err := time.LoadLocation(TimeZone)
-	if err != nil {
-		return nil, err
-	}
-
-	today := time.Now().In(loc).Truncate(24 * time.Hour)
+	today := time.Now().Truncate(24 * time.Hour)
 	// Filter by Date
 	filter := bson.M{"date": bson.M{"$gte": today}}
 
@@ -69,12 +64,7 @@ func GetDailyMedicines(c context.Context, d mongo.Database) (Medicines, error) {
 func AddDailyMedicine(c context.Context, d *mongo.Database, m Medicine) (*mongo.InsertOneResult, error) {
 	collection := d.Collection("medicines")
 
-	loc, err := time.LoadLocation(TimeZone)
-	if err != nil {
-		return nil, err
-	}
-
-	today := time.Now().In(loc).Truncate(24 * time.Hour)
+	today := time.Now().Truncate(24 * time.Hour)
 	m.Date = &today
 
 	result, err := collection.InsertOne(c, m)
