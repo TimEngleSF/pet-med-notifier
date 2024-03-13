@@ -78,9 +78,23 @@ func PutMedicineTakenHandler(c echo.Context) error {
 		// TODO: handle this error by displaying a message and sendin
 		log.Println("Error converting id query into ObjectID", err)
 	}
-	updateValue := taken == "true"
 
-	update := bson.D{{"$set", bson.D{{"taken", updateValue}}}}
+	updateValue := taken == "true"
+	var timeTaken interface{}
+
+	if updateValue {
+		timeTaken = time.Now()
+	} else {
+		timeTaken = nil
+	}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"taken", updateValue},
+			{"time-taken", timeTaken},
+		}},
+	}
+
 	_, err = coll.UpdateByID(c.Request().Context(), objId, update)
 	if err != nil {
 		// TODO: handle this error by displaying a message and sendin

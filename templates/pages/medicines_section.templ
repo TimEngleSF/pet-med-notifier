@@ -8,10 +8,10 @@ import (
 
 // TODO: use
 templ MedicineSection(gm repository.GroupedMedicines, keys []repository.TimeKey) {
-	<section class="flex flex-col justify-center items-center">
+	<section class="flex flex-col justify-center items-center gap-4">
 		for _, k := range keys {
-			<p>{ k.String()  }</p>
-			<div>
+			<p class="text-2xl">{ k.String()  }</p>
+			<div class="flex flex-col gap-2">
 				for _, m := range gm[k] {
 					if m.Taken {
 						@MedicineTakenCard(m)
@@ -36,15 +36,8 @@ templ MedicineCard(m repository.Medicine) {
 	<div class={ templ.KV(taken, m.Taken), templ.KV(missed, !m.Taken), templ.KV(complete, m.Taken && m.Due), cardStyle }>
 		<div class="card-body">
 			<h2 class={ "card-title ", templ.KV("text-white line-through", m.Taken) }>{ m.Name }</h2>
-			if m.Date != nil {
-				<p>{ m.Date.String() }</p>
-			}
 			<div class="card-actions justify-end ">
-				if m.Due && m.Taken {
-					✅
-				} else {
-					<button class="btn" hx-trigger="click" hx-put={ "/medicine-taken?id=" + m.Id.Hex() + "&taken=" + strconv.FormatBool(!m.Taken) } hx-target="main" hx-swap="innerHTML">Take Med</button>
-				}
+				<button class="btn" hx-trigger="click" hx-put={ "/medicine-taken?id=" + m.Id.Hex() + "&taken=" + strconv.FormatBool(!m.Taken) } hx-target="main" hx-swap="innerHTML">Take Med</button>
 			</div>
 		</div>
 	</div>
