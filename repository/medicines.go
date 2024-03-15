@@ -11,8 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const TimeZone = "America/Los_Angeles"
-
 type TimeKey struct {
 	Hour int `bson:"hour"`
 	Min  int `bson:"min"`
@@ -34,8 +32,8 @@ type GroupedMedicines map[TimeKey][]Medicine
 
 func GetDailyMedicines(c context.Context, d mongo.Database) (Medicines, error) {
 	collection := d.Collection("medicines")
-
-	today := time.Now().Truncate(24 * time.Hour)
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	// Filter by Date
 	filter := bson.M{"date": bson.M{"$gte": today}}
 
@@ -63,8 +61,8 @@ func GetDailyMedicines(c context.Context, d mongo.Database) (Medicines, error) {
 
 func AddDailyMedicine(c context.Context, d *mongo.Database, m Medicine) (*mongo.InsertOneResult, error) {
 	collection := d.Collection("medicines")
-
-	today := time.Now().Truncate(24 * time.Hour)
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	m.Date = &today
 
 	result, err := collection.InsertOne(c, m)
